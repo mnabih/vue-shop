@@ -16,7 +16,7 @@
                 <!-- sidebar-header  -->
                 <div class="sidebar-item sidebar-header">
                     <div class="user-pic">
-                        <img class="img-responsive img-rounded" src="img/user.png" alt="User picture">
+                        <img class="img-responsive img-rounded" src="/img/user.png" alt="User picture">
                     </div>
                     <div class="user-info">
                         <span class="user-name">Jhon
@@ -69,7 +69,7 @@
                             </router-link>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="#" @click.prevent="logout()">
                                 <i class="fa fa-power-off"></i>
                                 <span>Logout</span>
                             </a>
@@ -97,6 +97,8 @@
 <script>
 // @ is an alias to /src
 import Hero from "@/components/Hero.vue";
+import {fb} from '../firebase'
+
 export default {
   name: "admin",
   components: {
@@ -105,6 +107,15 @@ export default {
   methods:{
       closeMenu(){
         $(".page-wrapper").toggleClass("toggled");
+      },
+      logout(){
+          fb.auth().signOut()
+          .then(()=>{
+              this.$router.replace('/')
+          })
+          .catch((error)=>{
+              console.log(error);
+          })
       }
   }
 };
