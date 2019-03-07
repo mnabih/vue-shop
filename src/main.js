@@ -4,6 +4,11 @@ import router from "./router";
 
 import {fb}   from './firebase'
 
+import VueFirestore from 'vue-firestore'
+require('firebase/firestore')
+Vue.use(VueFirestore)
+
+
 
 import jQuery from "jquery";
 window.$ = window.jQuery = jQuery; // make it global and define $ 
