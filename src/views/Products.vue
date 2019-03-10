@@ -42,6 +42,10 @@
             <tr v-for="(product,index) in products" :key="index">
               <td>{{product.name}}</td>
               <td>{{product.price}}</td>
+              <td>
+                <button class="btn btn-primary" @click="editProduct(product)">Edit</button>
+                <button class="btn btn-danger" @click="deleteProduct(product)">Delete</button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -52,7 +56,8 @@
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="editLabel">Modal title</h5>
+              <h5 class="modal-title" v-if="modal == 'new'" id="editLabel">New Product</h5>
+              <h5 class="modal-title" v-if="modal == 'edit'"  id="editLabel">Edit Product</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -94,7 +99,8 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button @click="addProduct()" type="button" class="btn btn-primary">Save changes</button>
+              <button @click="addProduct()" v-if="modal == 'new'" type="button" class="btn btn-primary">Save changes</button>
+              <button @click="updateProduct()" v-if="modal == 'edit'" type="button" class="btn btn-primary">apply changes</button>
             </div>
           </div>
         </div>
@@ -124,7 +130,8 @@ export default {
         tag:null,
         image:null
       },
-      activeItem: null
+      activeItem: null,
+      modal:null
     }
   },
   firestore(){
@@ -146,22 +153,58 @@ export default {
       
     },
     addNew(){
+        this.modal = 'new';        
         $('#product').modal('show');
+        
     },
     updateProduct(){
-      
+          this.$firestore.products.doc(this.product.id).update(this.product);
+
+          $('#product').modal('hide');   
+          Toast.fire({
+            type: 'success',
+            title: 'updated successfully'
+          })
 
     },
     editProduct(product){
+      this.modal = 'edit';
+      this.product = product;
+      $('#product').modal('show');
       
     },
-    deleteProduct(id){
-      
+    deleteProduct(product){
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          this.$firestore.products.doc(product.id).delete()
+          // Swal.fire(
+          //   'Deleted!',
+          //   'Your file has been deleted.',
+          //   'success'
+          // )
+          Toast.fire({
+            type: 'success',
+            title: 'deleted successfully'
+          })
+        }
+      })
       
     },
     addProduct(){
       this.$firestore.products.add(this.product);
       $('#product').modal('hide');
+      Toast.fire({
+            type: 'success',
+            title: 'product added successfully'
+          })
     },
     
     readData(){
