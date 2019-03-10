@@ -71,7 +71,9 @@
                     </div>
 
                     <div class="form-group">
-                      <textarea name="description" class="form-control" placeholder="Product description" v-model='product.description' cols="30" rows="10"></textarea>
+                           <vue-editor v-model="product.description"></vue-editor>
+
+                      <!-- <textarea name="description" class="form-control" placeholder="Product description" v-model='product.description' cols="30" rows="10"></textarea> -->
                     </div>
                   </div>
                   <!-- product sidebar -->
@@ -113,8 +115,14 @@
 
 <script>
 import {db} from '../firebase.js';
+import { VueEditor } from "vue2-editor";
+
 export default {
   name: "Products",
+
+  components: {
+      VueEditor
+   },
 
   props: {
     msg: String
@@ -153,6 +161,7 @@ export default {
       
     },
     addNew(){
+      this.product = {};
         this.modal = 'new';        
         $('#product').modal('show');
         
