@@ -86,7 +86,7 @@
                     </div>
 
                     <div class="form-group">
-                      <input type="text" placeholder="Product tags" v-model="product.tag" class="form-control">
+                      <input type="text" @keyup.188="addTag" placeholder="Product tags" v-model="tag" class="form-control">
                     </div>
 
                     <div class="form-group">
@@ -135,9 +135,10 @@ export default {
         name:null,
         description:null,
         price:null,
-        tag:null,
+        tags:[],
         image:null
       },
+      tag:null,
       activeItem: null,
       modal:null
     }
@@ -148,6 +149,10 @@ export default {
       }
   },
   methods:{
+    addTag(){
+      this.product.tags.push(this.tag);
+      this.tag = "";
+    },
     uploadImage(){
 
     },
@@ -161,7 +166,7 @@ export default {
       
     },
     addNew(){
-      this.product = {};
+      //this.product = {};
         this.modal = 'new';        
         $('#product').modal('show');
         
