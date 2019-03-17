@@ -91,7 +91,7 @@
 
                     <div class="form-group">
                       <label for="product_image">Product Images</label>
-                      <input type="file" @change="uploadImage()" class="form-control">
+                      <input type="file" @change="uploadImage" class="form-control">
                     </div>
 
                   </div>
@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import {db} from '../firebase.js';
+import {fb,db} from '../firebase.js';
 import { VueEditor } from "vue2-editor";
 
 export default {
@@ -153,8 +153,34 @@ export default {
       this.product.tags.push(this.tag);
       this.tag = "";
     },
-    uploadImage(){
+    uploadImage(e){
+      let file = e.target.files[0]; // get file - js
+      var storageRef = fb.storage().ref('products/' + file.name); // where to store from fb site
+      let uploadTask = storageRef.put(file); // upload image put in var to controle it
 
+      uploadTask.on('state_changed', (snapshot) => {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        // switch (snapshot.state) {
+        //   case fb.storage.TaskState.PAUSED: // or 'paused'
+        //     console.log('Upload is paused');
+        //     break;
+        //   case fb.storage.TaskState.RUNNING: // or 'running'
+        //     console.log('Upload is running');
+        //     break;
+        // }
+      }, (error) => {
+        // Handle unsuccessful uploads
+      }, () => {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          this.product.image = downloadURL;
+          console.log('File available at', downloadURL);
+        });
+      });
     },
     watcher(){
       db.collection("products").onSnapshot((querySnapshot) => {
